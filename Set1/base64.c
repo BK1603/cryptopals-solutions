@@ -5,7 +5,8 @@
 
 /*
  * An implementation of the base64 algorithm. It is the solution
- * to the first problem in set 1. Still got to work on the padding part
+ * to the first problem in set 1. Still got to work on the padding part.
+ * Algo source: http://www.herongyang.com/Encoding/Base64-Encoding-Algorithm.html
  */
 
 char base64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -19,6 +20,7 @@ int ctox(char ch) {
 }
 
 int main() {
+  // Input string.
   char buffer[] = "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d";
   size_t len = strlen(buffer);
   // The length of the integer array.
