@@ -21,7 +21,7 @@ int ctox(char ch) {
 
 int main() {
   // Input string.
-  char buffer[] = "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d";
+  char buffer[] = "a4";
   size_t len = strlen(buffer);
   // The length of the integer array.
   len = ceil(len/6.0);
@@ -32,7 +32,7 @@ int main() {
   // a value 6 times. (In the k loop.)
   unsigned int *hex = (int *)malloc(sizeof(int) * len);
   memset(hex, 0, sizeof(hex));
-  int i, j;
+  int i, j, pad = 0;
   for(i = 0, j = 0; i < strlen(buffer); i++) {
     int k;
     for(k = 0; k < 5; k++) {
@@ -45,20 +45,28 @@ int main() {
     hex[j] |= (i >= strlen(buffer)) ? 0 : ctox(buffer[i]);
     j++;
   }
-  printf("\n");
+  int total_bytes = strlen(buffer) / 2;
+  pad = 3 - (total_bytes%3);
+  printf("%d\n", pad);
 
   // ------------ convert to base 64 here ------
-  char answer[len * 4];
+  int written = 0;                // to store number of bytes written
   for(i = 0, j = 0; j < len; j++) {
+    int mask = 0xfc0000;
     for(int k = 0; k < 4; k++) {
-      // get the first 6 buts by & fc0000 (since we stored
-      // 24 bits, so the highest bit is in the 24th pos.)
-      // the shift right and repeat.
-      printf("%c", base64[(hex[j] & 0xfc0000) >> 18]);
-      hex[j] <<= 6;
+      written = i/8;
+      if(total_bytes - written > 0)       // if there is still something to write.
+        // get the first 6 bits by & fc0000 (since we stored
+        // 24 bits, so the highest bit is in the 24th pos.)
+        // the shift right and repeat.
+        printf("%c", base64[(hex[j] & mask) >> (18 - k*6)]);
+      else                                // what follows is the padding
+        printf("%c", pad);
+      mask >>= 6;
+      i += 6;
     }
-    // TODO: padding code comes here.
   }
+  printf("\n");
   free(hex);
   return 0;
 }
